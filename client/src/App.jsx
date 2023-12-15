@@ -1,7 +1,11 @@
+import Header from "./components/Header";
+
 function App() {
   return (
     <>
-      <h1 className="text-red-500 text-5xl">Hello World</h1>
+      <div className="bg-zinc-800 h-screen w-screen">
+        <Header />
+      </div>
     </>
   )
 }

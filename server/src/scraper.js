@@ -9,15 +9,17 @@ const url = "https://loomian-legacy.fandom.com/wiki/Loomian";
 
 const banPhrases = [
     "Loomians",
-    "Typeless",
-    "type",
+    "Typeless Loomians",
     "Pages with broken file links",
     "Work in Progress",
     "Loomians with Variants",
     "Trainer Mastery",
+    "Loomians with Rainbow Forms",
+    "Set Encounter Loomians",
+    "Radiant Loomians"
 ]
 
-let uniqueCategories = new Set();
+let uniqueCategories = [];
 
 const fetchData = async () => {
     try {
@@ -64,14 +66,16 @@ const processLoomianPage = async (loomianPageUrl) => {
         const $ = cheerio.load(response.data);
 
         const categoryLinks = $("div.page-header__categories a[title^='Category:']").map((_, elem) => $(elem).text()).get();
-        let categories = categoryLinks.map(link => link.replace("Category:", ""));
+        let categories = categoryLinks
+            .map(link => link.replace("Category:", ""))
+            .filter(category => !banPhrases.includes(category) && !category.includes("-type"))
+            .map(category => category.replace("Loomians", ""))
+            .map(category => category.replace(/ /g, "")
+            .replace("with", ""));
 
-        // filter the array using the ban phrases
-        categories = categories.filter(category => !banPhrases.includes(category));
-        
         categories.forEach(category => {
-            if (!uniqueCategories.has(category)) {
-                uniqueCategories.add(category);
+            if (!uniqueCategories.includes(category)) {
+                uniqueCategories.push(category);
             }
         });
         
@@ -111,4 +115,5 @@ const main = async () => {
     }
 };
 
+console.log("starting scraper...")
 main();
