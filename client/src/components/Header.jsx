@@ -1,27 +1,23 @@
-import { HiOutlineExternalLink, HiOutlineQuestionMarkCircle } from "react-icons/hi";
+import { HiLink ,HiOutlineQuestionMarkCircle } from "react-icons/hi";
+
+import NavItem from "./NavItem";
+import logo from "../assets/loomidoku_tilted.png";
 
 function Header() {
   return (
-    <>
-      <div className="font-russo text-white bg-zinc-700 h-[10%] w-screen flex justify-between">
-        <div className="flex h-full items-center p-8">
-          <h1 className="text-xl sm:text-2xl md:text-4xl">Testing</h1>
-        </div>
-
-        <div className="flex h-full items-center p-8 text-xl">
-          <div className="p-4 m-2 bg-zinc-800 rounded-lg text-center">
-            <HiOutlineQuestionMarkCircle className="text-2xl"/>
-          </div>
-          <div className="p-4 m-2 bg-red-500 rounded-lg text-center">
-            <HiOutlineExternalLink />
-          </div>
-          <div className="p-4 m-2 bg-cyan-400 rounded-lg text-center">
-            <HiOutlineExternalLink/>
-          </div>
-        </div>
+    <header className="font-russo bg-zinc-700 text-white p-4 md:p-8 flex justify-between items-center">
+      <div className="flex items-center">
+        <img src={logo} alt="Loomidoku logo" className="w-20 h-20 mr-4" />
+        <h1 className="text-3xl md:text-5xl">Loomidoku</h1>
       </div>
-    </>
-  )
+
+      <div className="hidden md:flex text-xl">
+        <NavItem icon={<HiOutlineQuestionMarkCircle className="text-3xl"/>} color="zinc-800" />
+        <NavItem icon={<HiLink className="text-3xl"/>} color="red-500" />
+        <NavItem icon={<HiLink className="text-3xl"/>} color="cyan-400" />
+      </div>
+    </header>
+  );
 }
 
-export default Header
+export default Header;
