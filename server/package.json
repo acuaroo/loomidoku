@@ -4,18 +4,22 @@
   "description": "Pokedoku, but for Loomian Legacy :)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "main": "node src/index.js",
+    "scrape": "node src/scraper.js"
   },
   "author": "milan",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^5.7.0",
     "axios": "^1.6.2",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "prisma": "^5.7.0"
+    "mysql2": "^3.6.5",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
-    "cli-progress": "^3.12.0"
+    "cli-progress": "^3.12.0",
+    "prisma": "^5.7.0"
   }
 }

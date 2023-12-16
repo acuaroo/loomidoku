@@ -1,5 +1,6 @@
 import React from "react";
 import Slot from "./Slot";
+import Label from "./Label";
 
 function Grid() {
   const columnLabels = ["Column 1", "Column 2", "Column 3"];
@@ -11,21 +12,17 @@ function Grid() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-4">
+    <div className="max-w-2xl mx-auto md:translate-x-[-10%] mt-8 p-4">
       <div className="grid grid-cols-4 gap-2 sm:gap-4">
         <div></div>
 
         {columnLabels.map((label, index) => (
-          <div key={`col-${index}`} className="sm:text-2xl text-center">
-            {label}
-          </div>
+          <Label key={`col-${index}`} label={label} />
         ))}
 
         {rowLabels.map((label, index) => (
           <React.Fragment key={`row-${index}`}>
-            <div key={`row-label-${index}`} className="sm:text-2xl text-center translate-y-[37.5%]">
-              {label}
-            </div>
+            <Label key={`row-label-${index}`} label={label} isRow={true} />
 
             <Slot roundedCorner={corners[index][0]} />
             <Slot />

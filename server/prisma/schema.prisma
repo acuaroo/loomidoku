@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum Category {
+  BEGINNER
+  EVENT
+  SOULBURST
+  BRANCHEDEVOLUTIONS
+  PETROLITH
+  WEATHER
+  ROAMING
+
+  FIRE
+  WEATHERPLANT
+  LIGHT
+  DARK
+  ICE
+  ELECTRIC
+  AIR
+  BUG
+  EARTH
+  TOXIC
+  METAL
+  ANCIENT
+  SPIRIT
+  BRAWLER
+  MIND
+  TYPELESS
+}
+
+model Puzzle {
+    id         Int @id @default(autoincrement())
+    name       String
+    createdAt  DateTime @default(now())
+    row1       Category
+    row2       Category
+    row3       Category
+    column1    Category
+    column2    Category
+    column3    Category
+}

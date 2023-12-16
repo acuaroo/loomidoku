@@ -12,9 +12,9 @@ function Header() {
       </div>
 
       <div className="flex text-xl">
-        <NavItem icon={<HiOutlineQuestionMarkCircle className="text-3xl"/>} color="zinc-800" />
-        <NavItem icon={<HiLink className="text-3xl"/>} color="red-500" />
-        <NavItem icon={<HiLink className="text-3xl"/>} color="cyan-400" />
+        <NavItem icon={<HiOutlineQuestionMarkCircle className="text-3xl"/>} color="bg-zinc-800" />
+        <NavItem icon={<HiLink className="text-3xl"/>} color="bg-red-500" />
+        <NavItem icon={<HiLink className="text-3xl"/>} color="bg-cyan-400" />
       </div>
     </header>
   );
