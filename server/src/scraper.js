@@ -4,7 +4,6 @@ const fs = require("fs").promises;
 const path = require("path");
 const cliProgress = require('cli-progress');
 
-const filePath = path.join(__dirname, "../ldata/loomians.json");
 const url = "https://loomian-legacy.fandom.com/wiki/Loomian";
 
 const banPhrases = [
@@ -16,7 +15,9 @@ const banPhrases = [
     "Trainer Mastery",
     "Loomians with Rainbow Forms",
     "Set Encounter Loomians",
-    "Radiant Loomians"
+    "Radiant Loomians",
+    "Event Loomians",
+    "Beginner Loomians"
 ]
 
 let uniqueCategories = [];
@@ -37,16 +38,24 @@ const processTableRow = async ($, row, progressBar) => {
         id: $(idCell).text().trim(),
         name: $(imageCell).find("img").attr("alt") || "",
         image: $(imageCell).find("img").attr("data-src") || $(imageCell).find("img").attr("src") || "",
-        type: $(typeCell).find("a span").text().replace(/\n/g, "") || "",
         categories: [],
     };
 
     loomian.name = loomian.name.replace(/-menu$/, '');
-    loomian.type = loomian.type.replace(/([a-z])([A-Z])/g, '$1:$2');
 
     loomian.categories = await processLoomianPage(
-        `https://loomian-legacy.fandom.com/wiki/${loomian.name}`
+        `https://loomian-legacy.fandom.com/wiki/${loomian.name}`,
+        $(typeCell).find("a span").text().replace(/\n/g, "") || ""
     );
+
+    // let type = $(typeCell).find("a span").text().replace(/\n/g, "") || "";
+
+    // type = type.replace(/([a-z])([A-Z])/g, '$1 $2').split(" ");
+    // type = type.filter(Boolean);
+
+    // loomian.categories.push(
+    //     ...type.map((type) => type.toUpperCase())
+    // )
 
     progressBar.increment();
     
@@ -57,10 +66,10 @@ const processTable = async ($, progressBar) => {
     const loomians = await Promise.all(
         $(".wikitable tbody tr").map(async (_, row) => await processTableRow($, row, progressBar)).get()
     );
-    return loomians.filter(({ id, name, image, type }) => id && name && image && type);
+    return loomians.filter(({ id, name, image }) => id && name && image);
 };
 
-const processLoomianPage = async (loomianPageUrl) => {
+const processLoomianPage = async (loomianPageUrl, type) => {
     try {
         const response = await axios.get(loomianPageUrl);
         const $ = cheerio.load(response.data);
@@ -71,7 +80,55 @@ const processLoomianPage = async (loomianPageUrl) => {
             .filter(category => !banPhrases.includes(category) && !category.includes("-type"))
             .map(category => category.replace("Loomians", ""))
             .map(category => category.replace(/ /g, "")
-            .replace("with", ""));
+            .replace("with", ""))
+            .map(category => category.toUpperCase());
+        
+        type = type.replace(/([a-z])([A-Z])/g, '$1 $2').split(" ");
+        type = type.filter(Boolean);
+        type = type.map((type) => type.toUpperCase());
+
+        if (type.length > 1) {
+            categories.push("DUALTYPE");
+        } else {
+            categories.push("MONOTYPE");
+        }
+
+        categories.push(
+            ...type
+        )
+
+        if ($("div[data-source='Base']").text().includes("This Loomian does not evolve.")) {
+            categories.push("NOEVOLUTIONLINE");
+        } else {
+            const evolutionHeader = $("h2:contains('Evolution')");
+
+            const evolutionSection = evolutionHeader.parent();
+            const evolutionChildren = evolutionSection.children();
+
+            const loomianName = $("h1.page-header__title").text().replace(/\n/g, "").trim();
+
+            for (let i = 0; i < evolutionChildren.length; i++) {
+                const textElement = $(evolutionChildren[i]);
+                const text = textElement.text().replace(/\n/g, "").trim();
+                const strong = textElement.find("strong.mw-selflink.selflink");
+                
+                if (strong.length > 0 && strong.text().includes(loomianName)) {
+                    switch (i) {
+                        case 1:
+                            categories.push("FIRSTINEVOLUTIONLINE");
+                            break;
+                        case 3:
+                            categories.push("FIRSTEVOLUTION");
+                            break;
+                        case 5:
+                            categories.push("SECONDEVOLUTION");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
 
         categories.forEach(category => {
             if (!uniqueCategories.includes(category)) {
@@ -86,10 +143,12 @@ const processLoomianPage = async (loomianPageUrl) => {
     }
 };
 
-const saveToFile = async (data) => {
+const saveToFile = async (data, name) => {
+    const filePath = path.join(__dirname, `../ldata/${name}`);
+
     try {
         await fs.writeFile(filePath, JSON.stringify(data));
-        console.log("loomians saved to ldata/loomians.json!");
+        console.log(`loomians saved to ldata/${name}!`);
     } catch (error) {
         throw new Error(`err saving to file: ${error.message}`);
     }
@@ -109,11 +168,20 @@ const main = async () => {
 
         console.log(uniqueCategories);
 
-        await saveToFile(loomians);
+        await saveToFile([loomians, uniqueCategories], "loomians.json");
+        await saveToFile(
+            loomians.map(({ id, categories }) => ([id, ...categories ])),
+            "min.json"
+        );
+
+        await saveToFile(
+            loomians.reduce((acc, { id, name }) => ({ ...acc, [id]: name }), {}),
+            "lookup.json"
+        );
+
     } catch (error) {
         console.error(error.message);
     }
 };
 
-console.log("starting scraper...")
 main();
