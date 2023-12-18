@@ -1,2 +1,2 @@
 # loomidoku
-Pokedoku, but for Loomian Legacy :)
+![Pokedoku](https://pokedoku.com), but for Loomian Legacy :)
