@@ -3,7 +3,7 @@ import Grid from "./components/Grid";
 
 function App() {
   return (
-    <div className="bg-zinc-800 h-screen w-screen font-russo text-white">
+    <div className="font-russo text-white">
       <Header />
 
       <h1 className="text-3xl text-center pt-8 pb-0 text-cyan">
